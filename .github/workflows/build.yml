@@ -17,7 +17,12 @@ jobs:
       - name: Build
         run: |
           agvtool new-version -all $(git rev-parse --short HEAD)
-          make iphoneos
+          # Xcode's SPM graph sync can crash on a cold resolve; resolve first, retry once
+          for i in 1 2 3; do
+            xcodebuild -resolvePackageDependencies -project Feather.xcodeproj -scheme Feather -derivedDataPath $TMPDIR/Feather/iphoneos -skipPackagePluginValidation && break
+            sleep 5
+          done
+          make iphoneos || make iphoneos
           mv packages/Feather.ipa packages/Signet.ipa
       - uses: actions/upload-artifact@v4
         with:
