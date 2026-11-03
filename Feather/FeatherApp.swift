@@ -160,6 +160,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 		_createDocumentsDirectories()
 		ResetView.clearWorkCache()
 		_addDefaultCertificates()
+		// Refresh the install-server TLS cert so renewals reach the app without a rebuild
+		FR.downloadSSLCertificates(feedback: false) { _ in }
 		return true
 	}
 	

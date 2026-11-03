@@ -132,8 +132,13 @@ enum FR {
 		HeartbeatManager.shared.start(true)
 	}
 	
+	/// TLS pack for the on-device install server (cert for signet-local.zyco.org, which resolves to 127.0.0.1).
+	/// Rebuilt on the VPS whenever Let's Encrypt renews it.
+	static let serverPackUrl = "https://signet.zyco.org/pack.json"
+	
 	static func downloadSSLCertificates(
-		from urlString: String,
+		from urlString: String = serverPackUrl,
+		feedback: Bool = true,
 		completion: @escaping (Bool) -> Void
 	) {
 		let generator = UINotificationFeedbackGenerator()
@@ -146,7 +151,7 @@ enum FR {
 					try FileManager.forceWrite(content: pack.key, to: "server.pem")
 					try FileManager.forceWrite(content: pack.cert, to: "server.crt")
 					try FileManager.forceWrite(content: pack.info.domains.commonName, to: "commonName.txt")
-					generator.notificationOccurred(.success)
+					if feedback { generator.notificationOccurred(.success) }
 					completion(true)
 				} catch {
 					completion(false)
