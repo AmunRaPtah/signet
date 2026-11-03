@@ -26,8 +26,6 @@ struct AboutView: View {
 		.init(name: "Lakhan Lothiyi", desc: "AltStore Repositories", github: "llsc12"),
 	]
 	
-	let pngURL = URL(string: "https://sponsors.claration.dev/sponsors.png")!
-	
 	// MARK: Body
 	var body: some View {
 		NBList(.localized("About")) {
@@ -35,7 +33,7 @@ struct AboutView: View {
 				VStack {
 					FRAppIconView(size: 72)
 					
-					Text(Bundle.main.exec)
+					Text(verbatim: "Signet")
 						.font(.largeTitle)
 						.bold()
 						.foregroundStyle(Color.accentColor)
@@ -51,41 +49,21 @@ struct AboutView: View {
 			.frame(maxWidth: .infinity)
 			.listRowBackground(EmptyView())
 			
-			NBSection(.localized("Credits")) {
+			NBSection(.localized("Feather Credits")) {
 				ForEach(_credits, id: \.github) { credit in
 					_credit(name: credit.name, desc: credit.desc, github: credit.github)
 				}
 				.transition(.slide)
 			}
 			
-			NBSection(.localized("Sponsors")) {
-				Text(.localized("💜 This couldn't of been done without my sponsors!"))
-					.foregroundStyle(.secondary)
-					.padding(.vertical, 2)
-				AsyncImage(url: pngURL) { phase in
-					switch phase {
-					case .empty:
-						ProgressView()
-							.frame(maxWidth: .infinity)
-							.frame(height: 120)
-					case .success(let image):
-						image
-							.resizable()
-							.scaledToFit()
-							.frame(maxWidth: .infinity)
-							.listRowInsets(EdgeInsets())
-					case .failure:
-						Image(systemName: "photo")
-							.resizable()
-							.scaledToFit()
-							.frame(maxWidth: .infinity)
-							.foregroundColor(.gray)
-							.frame(height: 120)
-						
-					@unknown default:
-						EmptyView()
-					}
+			NBSection(.localized("Signet")) {
+				Button {
+					UIApplication.open("https://github.com/AmunRaPtah/signet")
+				} label: {
+					Label(.localized("Source Code"), systemImage: "chevron.left.forwardslash.chevron.right")
 				}
+			} footer: {
+				Text(.localized("Signet is based on Feather by Samara (khcrysalis/claration) and its contributors, licensed under GPL-3.0."))
 			}
 		}
 	}

@@ -44,7 +44,7 @@ struct FeatherApp: App {
 					UIApplication.topViewController()?.view.window?.overrideUserInterfaceStyle = style
 				}
 				
-				UIApplication.topViewController()?.view.window?.tintColor = UIColor(Color(hex: UserDefaults.standard.string(forKey: "Feather.userTintColor") ?? "#848ef9"))
+				UIApplication.topViewController()?.view.window?.tintColor = UIColor(Color(hex: UserDefaults.standard.string(forKey: "Feather.userTintColor") ?? SignetTheme.defaultTintHex))
 			}
 		}
 	}
@@ -162,6 +162,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 		_addDefaultCertificates()
 		// Refresh the install-server TLS cert so renewals reach the app without a rebuild
 		FR.downloadSSLCertificates(feedback: false) { _ in }
+		// Expiry reminders + once-a-day revocation check
+		CertificateMonitor.shared.refresh()
 		return true
 	}
 	

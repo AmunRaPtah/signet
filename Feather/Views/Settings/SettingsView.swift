@@ -34,17 +34,15 @@ struct SettingsView: View {
 	}
 
     
-	private let _donationsUrl = "https://github.com/sponsors/claration"
-	private let _githubUrl = "https://github.com/claration/Feather"
+	@AppStorage(CertificateMonitor.expiryAlertsKey) private var _expiryAlerts: Bool = true
+	@AppStorage(CertificateMonitor.revokeCheckKey) private var _dailyRevokeCheck: Bool = true
+	
+	private let _githubUrl = "https://github.com/AmunRaPtah/signet"
     
 	// MARK: Body
 	var body: some View {
 		NBNavigationView(.localized("Settings")) {
 			Form {
-				#if !NIGHTLY && !DEBUG
-					SettingsDonationCellView(site: _donationsUrl)
-				#endif
-                
 				_feedback()
                 
 				Section {
@@ -71,6 +69,19 @@ struct SettingsView: View {
                  
 				} footer: {
 					Text(.localized("Add and manage certificates used for signing applications."))
+				}
+				
+				NBSection(.localized("Alerts")) {
+					Toggle(.localized("Expiry Reminders"), systemImage: "bell.badge", isOn: $_expiryAlerts)
+					Toggle(.localized("Daily Revocation Check"), systemImage: "checkmark.shield", isOn: $_dailyRevokeCheck)
+				} footer: {
+					Text(.localized("Signet notifies you 7 days and 1 day before a certificate expires, and checks once a day whether Apple has revoked it."))
+				}
+				.onChange(of: _expiryAlerts) { _ in
+					CertificateMonitor.shared.rescheduleReminders()
+				}
+				.onChange(of: _dailyRevokeCheck) { enabled in
+					if enabled { CertificateMonitor.shared.checkRevocationIfDue() }
 				}
                 
 				NBSection(.localized("Features")) {
@@ -121,7 +132,7 @@ extension SettingsView {
 				UIApplication.open(_githubUrl)
 			}
 		} footer: {
-			Text(.localized("If any issues occur within the app please report it via the GitHub repository. When submitting an issue, make sure to submit detailed information."))
+			Text(.localized("Report problems or request features on the Signet GitHub repository."))
 		}
 	}
     

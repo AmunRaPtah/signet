@@ -93,6 +93,7 @@ enum FR {
 				try await handler.copy()
 				try await handler.addToDatabase()
 				await MainActor.run {
+					CertificateMonitor.shared.rescheduleReminders()
 					completion(nil)
 				}
 			} catch {
